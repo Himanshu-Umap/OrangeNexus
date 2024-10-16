@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
                   });
                 },
                 isSelected: [_isFarmer, !_isFarmer],
-                children: [
+                children: const [
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text('Farmer'),
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text('Login'),
+                      child: const Text('Login'),
                     ),
                   ],
                 ),

@@ -1,6 +1,7 @@
 // File: lib/screens/product_upload/product_upload.dart
-
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import '../../models/product.dart';
 
 class ProductUploadPage extends StatefulWidget {
   const ProductUploadPage({super.key});
@@ -16,6 +17,17 @@ class _ProductUploadPageState extends State<ProductUploadPage> {
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _harvestDate;
+  final String _farmerId = 'current_farmer_id'; // Replace with actual farmer ID
+  final _uuid = const Uuid();
+
+  @override
+  void dispose() {
+    _productNameController.dispose();
+    _quantityController.dispose();
+    _priceController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +70,9 @@ class _ProductUploadPageState extends State<ProductUploadPage> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the quantity';
                         }
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
                         return null;
                       },
                     ),
@@ -74,6 +89,9 @@ class _ProductUploadPageState extends State<ProductUploadPage> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the price';
+                        }
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid number';
                         }
                         return null;
                       },
@@ -125,13 +143,17 @@ class _ProductUploadPageState extends State<ProductUploadPage> {
               ElevatedButton.icon(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Process the form data and upload the product
-                    print('Product Name: ${_productNameController.text}');
-                    print('Quantity: ${_quantityController.text} kg');
-                    print('Price: ₹${_priceController.text}');
-                    print('Description: ${_descriptionController.text}');
-                    print('Harvest Date: $_harvestDate');
-                    // Add logic to upload the product and navigate back
+                    final newProduct = Product(
+                      id: _uuid.v4(),
+                      name: _productNameController.text,
+                      quantity: double.parse(_quantityController.text),
+                      price: double.parse(_priceController.text),
+                      farmerId: _farmerId,
+                      description: _descriptionController.text,
+                      harvestDate: _harvestDate,
+                    );
+
+                    Navigator.pop(context, newProduct);
                   }
                 },
                 icon: const Icon(Icons.upload),

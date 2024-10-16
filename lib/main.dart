@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FarmConnect',
+      title: 'OrangeNexus',
       theme: ThemeData(
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
         '/farmer_profile': (context) => FarmerProfilePage(),
         '/businessman_profile': (context) => BusinessmanProfilePage(),
       },
+      debugShowCheckedModeBanner: false, // Disable the debug banner
     );
   }
 }

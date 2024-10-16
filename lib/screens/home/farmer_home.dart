@@ -1,9 +1,18 @@
 // File: lib/screens/home/farmer_home.dart
-
 import 'package:flutter/material.dart';
+import '../../models/product.dart';
+import 'package:uuid/uuid.dart'; // Add this dependency to pubspec.yaml
 
-class FarmerHomePage extends StatelessWidget {
+class FarmerHomePage extends StatefulWidget {
   const FarmerHomePage({super.key});
+
+  @override
+  State<FarmerHomePage> createState() => _FarmerHomePageState();
+}
+
+class _FarmerHomePageState extends State<FarmerHomePage> {
+  final List<Product> _productList = [];
+  final String _farmerId = 'current_farmer_id'; // Replace with actual farmer ID
 
   @override
   Widget build(BuildContext context) {
@@ -26,25 +35,25 @@ class FarmerHomePage extends StatelessWidget {
           const SizedBox(height: 16),
           _buildUploadButton(context),
           const SizedBox(height: 16),
-          _buildProduceList(),
+          _buildProductList(),
         ],
       ),
     );
   }
 
   Widget _buildWelcomeCard() {
-    return const Card(
+    return Card(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Welcome, John Doe!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
-            Text('You have 3 active listings and 2 pending bids.'),
+            const SizedBox(height: 8),
+            Text('You have ${_productList.length} active listings.'),
           ],
         ),
       ),
@@ -53,9 +62,13 @@ class FarmerHomePage extends StatelessWidget {
 
   Widget _buildUploadButton(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {
-        // Navigate to upload page
-        Navigator.pushNamed(context, '/product_upload');
+      onPressed: () async {
+        final result = await Navigator.pushNamed(context, '/product_upload');
+        if (result != null && result is Product) {
+          setState(() {
+            _productList.add(result);
+          });
+        }
       },
       icon: const Icon(Icons.add),
       label: const Text('Upload New Produce'),
@@ -65,39 +78,32 @@ class FarmerHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildProduceList() {
-    return const Column(
+  Widget _buildProductList() {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Your Produce',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 8),
-        Card(
-          child: ListTile(
-            leading: Icon(Icons.agriculture),
-            title: Text('Oranges'),
-            subtitle: Text('10kg - ₹500'),
-            trailing: Chip(label: Text('2 bids')),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            leading: Icon(Icons.agriculture),
-            title: Text('Apples'),
-            subtitle: Text('15kg - ₹750'),
-            trailing: Chip(label: Text('Waiting')),
-          ),
-        ),
-        Card(
-          child: ListTile(
-            leading: Icon(Icons.agriculture),
-            title: Text('Grapes'),
-            subtitle: Text('5kg - ₹300'),
-            trailing: Chip(label: Text('Sold')),
-          ),
-        ),
+        const SizedBox(height: 8),
+        if (_productList.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('No produce listed yet'),
+            ),
+          )
+        else
+          ..._productList.map((product) => Card(
+                child: ListTile(
+                  leading: const Icon(Icons.agriculture),
+                  title: Text(product.name),
+                  subtitle: Text(
+                      '${product.quantity}kg - ₹${product.price.toStringAsFixed(2)}'),
+                  trailing: Chip(label: Text(product.status)),
+                ),
+              )),
       ],
     );
   }

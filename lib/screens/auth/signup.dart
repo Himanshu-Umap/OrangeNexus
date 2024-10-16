@@ -18,6 +18,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final _addressController = TextEditingController();
   final _businessTypeController = TextEditingController();
 
+  bool isValidEmail(String email) {
+    String pattern = r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+$";
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(email);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 });
               },
               isSelected: [_isFarmer, !_isFarmer],
-              children: [
+              children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text('Farmer'),
@@ -75,6 +82,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
+                      } else if (!isValidEmail(value)) {
+                        return 'Please enter a valid email';
                       }
                       // Add email validation logic here
                       return null;
